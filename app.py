@@ -3,8 +3,8 @@ import json
 import pandas as pd
 from datetime import datetime
 
-st.set_page_config(page_title="Mi Entrenamiento", page_icon="💪")
-st.title("💪 Mi App de Entrenamiento")
+st.set_page_config(page_title="Entreno", page_icon="💪")
+st.title("💪 Entreno")
 
 archivo = "datos.json"
 
@@ -20,7 +20,7 @@ def guardar(datos):
         json.dump(datos, f)
 
 # --- Añadir Entrenamiento ---
-st.header("➕ Nuevo Entrenamiento")
+st.header("Añadir Entrenamiento")
 col1, col2 = st.columns(2)
 
 with col1:
