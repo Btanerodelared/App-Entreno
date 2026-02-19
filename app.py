@@ -4,8 +4,7 @@ import pandas as pd
 from datetime import datetime
 
 st.set_page_config(page_title="Mi Entrenamiento", page_icon="💪")
-
-st.title("💪 Mi Entrenamiento")
+st.title("💪 Mi App de Entrenamiento")
 
 archivo = "datos.json"
 
@@ -20,9 +19,8 @@ def guardar(datos):
     with open(archivo, "w") as f:
         json.dump(datos, f)
 
-# --- Añadir entrenamiento ---
+# --- Añadir Entrenamiento ---
 st.header("➕ Nuevo Entrenamiento")
-
 col1, col2 = st.columns(2)
 
 with col1:
@@ -41,28 +39,28 @@ if st.button("Guardar 💾"):
         "reps": reps
     })
     guardar(datos)
-    st.success("Entrenamiento guardado ✅")
+    st.success("✅ Entrenamiento guardado")
 
-# --- Historial ---
+# --- Historial y gráficas ---
 st.header("📊 Progreso")
-
 datos = cargar()
 
 if datos:
     df = pd.DataFrame(datos)
+    ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
+    df_filtrado = df[df["ejercicio"] == ejercicio_sel]
 
-    ejercicio_seleccionado = st.selectbox(
-        "Selecciona ejercicio",
-        df["ejercicio"].unique()
-    )
-
-    df_filtrado = df[df["ejercicio"] == ejercicio_seleccionado]
-
+    st.subheader("Gráfica de peso")
     st.line_chart(df_filtrado["peso"])
 
-    mejor_marca = df_filtrado["peso"].max()
-    st.metric("🏆 Mejor marca", f"{mejor_marca} kg")
+    st.subheader("Volumen total por sesión")
+    df_filtrado["volumen"] = df_filtrado["peso"] * df_filtrado["reps"]
+    st.bar_chart(df_filtrado["volumen"])
 
+    mejor = df_filtrado["peso"].max()
+    st.metric("🏆 Mejor marca", f"{mejor} kg")
+
+    st.subheader("Historial")
     st.dataframe(df_filtrado)
 else:
-    st.info("Aún no hay entrenamientos registrados.")
+    st.info("No hay entrenamientos registrados aún.")
