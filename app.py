@@ -49,20 +49,23 @@ if datos:
     ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
     df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
-    # Mostrar tabla con checkboxes para eliminar
-    st.subheader("Selecciona entrenamientos para eliminar")
-    eliminar_indices = []
+    # Botones de eliminar por fila
+    st.subheader("Eliminar entrenamientos")
+    eliminar_ids = []
     for i, row in df_filtrado.iterrows():
-        if st.checkbox(f"{row['fecha']} - {row['ejercicio']} - {row['peso']}kg x {row['reps']}", key=i):
-            eliminar_indices.append(i)
+        if st.button(f"Eliminar: {row['fecha']} - {row['peso']}kg x {row['reps']}", key=f"del_{i}"):
+            eliminar_ids.append(i)
 
-    if st.button("Eliminar ✅"):
-        df_filtrado = df_filtrado.drop(eliminar_indices)
-        # Actualizamos datos.json
-        datos = [d for d in datos if not (d['ejercicio']==ejercicio_sel and
-                                          any(d['fecha']==df_filtrado.iloc[j]['fecha'] for j in range(len(df_filtrado)))) ]
-        guardar(datos)
-        st.experimental_rerun()  # recarga la app para reflejar cambios
+    # Actualizar datos.json después de eliminar
+    if eliminar_ids:
+        # Creamos nuevo dataset sin los eliminados
+        indices_originales = df_filtrado.index[eliminar_ids]
+        df_filtrado = df_filtrado.drop(indices_originales)
+        # Guardar en datos.json solo los que NO fueron eliminados
+        nuevos_datos = [d for d in datos if not (d['ejercicio']==ejercicio_sel and any(d['fecha']==row['fecha'] and d['peso']==row['peso'] and d['reps']==row['reps'] for idx,row in df_filtrado.iterrows()))]
+        guardar(nuevos_datos)
+        st.success("✅ Entrenamiento eliminado")
+        st.experimental_rerun()  # Opcional, si aún da problemas puedes quitarlo y solo mostrar la tabla filtrada
 
     # --- Gráficas y métricas ---
     if not df_filtrado.empty:
