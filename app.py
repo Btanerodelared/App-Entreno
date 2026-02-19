@@ -58,14 +58,16 @@ if datos:
 
     # Actualizar datos.json después de eliminar
     if eliminar_ids:
-        # Creamos nuevo dataset sin los eliminados
-        indices_originales = df_filtrado.index[eliminar_ids]
-        df_filtrado = df_filtrado.drop(indices_originales)
-        # Guardar en datos.json solo los que NO fueron eliminados
-        nuevos_datos = [d for d in datos if not (d['ejercicio']==ejercicio_sel and any(d['fecha']==row['fecha'] and d['peso']==row['peso'] and d['reps']==row['reps'] for idx,row in df_filtrado.iterrows()))]
-        guardar(nuevos_datos)
+        # Eliminamos los entrenamientos seleccionados
+        for i in sorted(eliminar_ids, reverse=True):
+            # Buscar la fila correspondiente en los datos originales
+            row = df_filtrado.iloc[i]
+            datos = [d for d in datos if not (d['fecha']==row['fecha'] and d['ejercicio']==row['ejercicio'] and d['peso']==row['peso'] and d['reps']==row['reps'])]
+        guardar(datos)
         st.success("✅ Entrenamiento eliminado")
-        st.experimental_rerun()  # Opcional, si aún da problemas puedes quitarlo y solo mostrar la tabla filtrada
+
+        # Recargamos los datos filtrados para mostrar la tabla actualizada
+        df_filtrado = pd.DataFrame([d for d in datos if d['ejercicio'] == ejercicio_sel])
 
     # --- Gráficas y métricas ---
     if not df_filtrado.empty:
