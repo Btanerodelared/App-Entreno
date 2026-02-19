@@ -44,7 +44,7 @@ if st.button("Guardar 💾"):
     st.success("✅ Entrenamiento guardado")
 
 # --- Historial y eliminar ---
-st.header("📊 Historial")
+st.header("📊 Historial y progreso")
 datos = cargar()
 
 if datos:
@@ -68,8 +68,15 @@ if datos:
         # Actualizamos tabla filtrada
         df_filtrado = pd.DataFrame([d for d in datos if d['ejercicio'] == ejercicio_sel])
 
-    # --- Mostrar historial ---
+    # --- Progresión del peso ---
     if not df_filtrado.empty:
+        st.subheader("📈 Progresión del peso")
+        st.line_chart(df_filtrado["peso"])
+
+        mejor = df_filtrado["peso"].max()
+        st.metric("🏆 Mejor marca", f"{mejor} kg")
+
+        # --- Mostrar historial ---
         df_filtrado_display = df_filtrado.copy()
         df_filtrado_display["Series x Reps"] = df_filtrado_display["series"].astype(str) + "x" + df_filtrado_display["reps"].astype(str)
         st.dataframe(df_filtrado_display[["fecha", "ejercicio", "peso", "Series x Reps"]])
