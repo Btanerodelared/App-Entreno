@@ -1,8 +1,11 @@
 import streamlit as st
 import json
+import pandas as pd
 from datetime import datetime
 
-st.title("Mi App de Entrenamiento 💪")
+st.set_page_config(page_title="Mi Entrenamiento", page_icon="💪")
+
+st.title("💪 Mi Entrenamiento")
 
 archivo = "datos.json"
 
@@ -17,11 +20,19 @@ def guardar(datos):
     with open(archivo, "w") as f:
         json.dump(datos, f)
 
-ejercicio = st.text_input("Ejercicio")
-peso = st.number_input("Peso (kg)")
-reps = st.number_input("Repeticiones")
+# --- Añadir entrenamiento ---
+st.header("➕ Nuevo Entrenamiento")
 
-if st.button("Guardar entrenamiento"):
+col1, col2 = st.columns(2)
+
+with col1:
+    ejercicio = st.text_input("Ejercicio")
+    peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
+
+with col2:
+    reps = st.number_input("Repeticiones", min_value=0, step=1)
+
+if st.button("Guardar 💾"):
     datos = cargar()
     datos.append({
         "fecha": str(datetime.now().date()),
@@ -32,7 +43,26 @@ if st.button("Guardar entrenamiento"):
     guardar(datos)
     st.success("Entrenamiento guardado ✅")
 
-st.subheader("Historial")
+# --- Historial ---
+st.header("📊 Progreso")
 
-for d in cargar():
-    st.write(f"{d['fecha']} - {d['ejercicio']} - {d['peso']}kg x {d['reps']}")
+datos = cargar()
+
+if datos:
+    df = pd.DataFrame(datos)
+
+    ejercicio_seleccionado = st.selectbox(
+        "Selecciona ejercicio",
+        df["ejercicio"].unique()
+    )
+
+    df_filtrado = df[df["ejercicio"] == ejercicio_seleccionado]
+
+    st.line_chart(df_filtrado["peso"])
+
+    mejor_marca = df_filtrado["peso"].max()
+    st.metric("🏆 Mejor marca", f"{mejor_marca} kg")
+
+    st.dataframe(df_filtrado)
+else:
+    st.info("Aún no hay entrenamientos registrados.")
