@@ -3,8 +3,8 @@ import json
 import pandas as pd
 from datetime import datetime
 
-st.set_page_config(page_title="Mi Entrenamiento", page_icon="💪")
-st.title("💪 Mi App de Entrenamiento")
+st.set_page_config(page_title="Entrenos", page_icon="💪")
+st.title("💪 Gym")
 
 archivo = "datos.json"
 
@@ -109,15 +109,9 @@ with tab2:
             st.subheader("📈 Progresión del peso")
             st.line_chart(df_filtrado["peso"])
 
-            df_filtrado["Volumen"] = df_filtrado["series"] * df_filtrado["reps"] * df_filtrado["peso"]
-            st.subheader("🏋️ Volumen total por sesión")
-            st.line_chart(df_filtrado["Volumen"])
-
             mejor = df_filtrado["peso"].max()
-            mayor_volumen = df_filtrado["Volumen"].max()
             st.metric("🏆 Mejor marca", f"{mejor} kg")
-            st.metric("🔥 Mayor volumen", f"{mayor_volumen} kg")
 
             df_display = df_filtrado.copy()
             df_display["Series x Reps"] = df_display["series"].astype(str) + "x" + df_display["reps"].astype(str)
-            st.dataframe(df_display[["fecha", "ejercicio", "peso", "Series x Reps", "Volumen"]])
+            st.dataframe(df_display[["fecha", "ejercicio", "peso", "Series x Reps"]])
