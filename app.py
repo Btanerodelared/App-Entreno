@@ -12,9 +12,26 @@ archivo = "datos.json"
 def cargar():
     try:
         with open(archivo, "r") as f:
-            return json.load(f)
+            datos = json.load(f)
+
+        # Si es lista antigua → convertir a perfiles
+        if isinstance(datos, list):
+            datos = {
+                "Perfil 1": datos,
+                "Perfil 2": []
+            }
+            guardar(datos)
+
+        return datos
+
     except:
-        return {}
+        # Si no existe el archivo → crear estructura inicial
+        datos = {
+            "Perfil 1": [],
+            "Perfil 2": []
+        }
+        guardar(datos)
+        return datos
 
 def guardar(datos):
     with open(archivo, "w") as f:
