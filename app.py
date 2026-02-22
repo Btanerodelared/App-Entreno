@@ -41,7 +41,7 @@ def guardar(datos):
 datos = cargar()
 
 if not datos:
-    datos = {"Perfil 1": [], "Perfil 2": []}
+    datos = {"Carlos": [], "David": []}
     guardar(datos)
 
 perfil = st.selectbox("Selecciona perfil", list(datos.keys()))
