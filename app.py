@@ -57,7 +57,8 @@ with tab1:
         else:
             guardar_entrenamiento(ejercicio, series, reps, peso)
             st.success("✅ Entrenamiento guardado")
-            st.stop()  # refresca la app automáticamente
+            # recargar los datos de inmediato
+            df = cargar_entrenamientos()
 
 # --- TAB 2: Historial y progreso ---
 with tab2:
