@@ -1,39 +1,55 @@
 import streamlit as st
-import json
 import pandas as pd
 from datetime import datetime
-import os
+import sqlite3
 
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("💪 Gym")
 
-archivo = "datos.json"
+DB_FILE = "entrenamientos.db"
 
-# --- Funciones ---
-def cargar():
-    """Cargar datos desde JSON, si no existe crea un archivo vacío."""
-    if os.path.exists(archivo):
-        try:
-            with open(archivo, "r") as f:
-                datos = json.load(f)
-            # Convertir lista vacía si es None
-            if not isinstance(datos, list):
-                datos = []
-            return datos
-        except:
-            pass
-    # Si no existe o hay error → crear lista vacía
-    datos = []
-    guardar(datos)
-    return datos
+# --- Funciones de base de datos ---
+def crear_tabla():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS entrenamientos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fecha TEXT,
+            ejercicio TEXT,
+            series INTEGER,
+            reps INTEGER,
+            peso REAL
+        )
+    """)
+    conn.commit()
+    conn.close()
 
-def guardar(datos):
-    """Guardar datos en el JSON."""
-    with open(archivo, "w") as f:
-        json.dump(datos, f, indent=4)
+def guardar_entrenamiento(ejercicio, series, reps, peso):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("""
+        INSERT INTO entrenamientos (fecha, ejercicio, series, reps, peso)
+        VALUES (?, ?, ?, ?, ?)
+    """, (str(datetime.now().date()), ejercicio, series, reps, peso))
+    conn.commit()
+    conn.close()
 
-# --- Cargar datos ---
-datos = cargar()
+def cargar_entrenamientos():
+    conn = sqlite3.connect(DB_FILE)
+    df = pd.read_sql_query("SELECT * FROM entrenamientos", conn)
+    conn.close()
+    return df
+
+def eliminar_entrenamientos(id_list):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.executemany("DELETE FROM entrenamientos WHERE id = ?", [(i,) for i in id_list])
+    conn.commit()
+    conn.close()
+
+# --- Inicializar base de datos ---
+crear_tabla()
 
 # --- Tabs ---
 tab1, tab2 = st.tabs(["➕ Nuevo Entrenamiento", "📊 Historial y progreso"])
@@ -54,57 +70,32 @@ with tab1:
         if not ejercicio.strip():
             st.error("❌ Por favor ingresa un ejercicio")
         else:
-            datos.append({
-                "fecha": str(datetime.now().date()),
-                "ejercicio": ejercicio,
-                "series": series,
-                "reps": reps,
-                "peso": peso
-            })
-            guardar(datos)
+            guardar_entrenamiento(ejercicio, series, reps, peso)
             st.success("✅ Entrenamiento guardado")
 
 # --- TAB 2: Historial y progreso ---
 with tab2:
     st.header("📊 Historial y progreso")
+    df = cargar_entrenamientos()
 
-    if not datos:
+    if df.empty:
         st.info("Aún no hay entrenamientos guardados.")
     else:
-        df = pd.DataFrame(datos)
-
         # Seleccionar ejercicio
-        ejercicio_sel = st.selectbox(
-            "Selecciona ejercicio",
-            df["ejercicio"].unique()
-        )
+        ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
         df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
         # --- Eliminar entrenamientos ---
         st.subheader("Eliminar entrenamientos")
         opciones = [
-            f"{row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
-            for i, row in df_filtrado.iterrows()
+            f"{row['id']} - {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
+            for _, row in df_filtrado.iterrows()
         ]
         eliminar = st.multiselect("Selecciona entrenamientos a eliminar", opciones)
         if st.button("Eliminar seleccionados"):
             if eliminar:
-                for sel in eliminar:
-                    fecha, resto = sel.split(" - ")
-                    series_reps, peso_str = resto.split(" - ")
-                    s, r = series_reps.split("x")
-                    p = float(peso_str.replace("kg", ""))
-                    datos = [
-                        d for d in datos
-                        if not (
-                            d['fecha'] == fecha and
-                            d['ejercicio'] == ejercicio_sel and
-                            d['series'] == int(s) and
-                            d['reps'] == int(r) and
-                            d['peso'] == p
-                        )
-                    ]
-                guardar(datos)
+                ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
+                eliminar_entrenamientos(ids_eliminar)
                 st.success("✅ Entrenamientos eliminados")
                 st.experimental_rerun()
 
