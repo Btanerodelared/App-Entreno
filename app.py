@@ -10,8 +10,8 @@ st.title("💪 Gym")
 DATABASE_URL = st.secrets["DATABASE_URL"]
 
 engine = create_engine(
-    DATABASE_URL,
-    connect_args={"sslmode": "require"}
+    st.secrets["DATABASE_URL"],
+    pool_pre_ping=True
 )
 
 # --- Funciones ---
