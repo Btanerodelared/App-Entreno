@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import pandas as pd
 from datetime import datetime
+import os
 
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("💪 Gym")
@@ -10,30 +11,48 @@ archivo = "datos.json"
 
 # --- Funciones ---
 def cargar():
-    try:
-        with open(archivo, "r") as f:
-            datos = json.load(f)
-
-        # Si es lista → convertir a diccionario {nombre: entrenamientos}
-        if isinstance(datos, list):
-            datos_dict = {p['nombre']: p.get('entrenamientos', []) for p in datos}
-            guardar(datos_dict)
-            return datos_dict
-
-        return datos
-
-    except:
-        datos = {"Carlos": [], "David": []}
-        guardar(datos)
-        return datos
+    """Cargar datos desde JSON, si no existe crea un archivo vacío."""
+    if os.path.exists(archivo):
+        try:
+            with open(archivo, "r") as f:
+                datos = json.load(f)
+            # Convertir lista a dict si es necesario
+            if isinstance(datos, list):
+                datos_dict = {p['nombre']: p.get('entrenamientos', []) for p in datos}
+                guardar(datos_dict)
+                return datos_dict
+            return datos
+        except:
+            pass
+    # Si no existe o hay error → crear datos iniciales vacíos
+    datos = {}
+    guardar(datos)
+    return datos
 
 def guardar(datos):
+    """Guardar datos en el JSON."""
     with open(archivo, "w") as f:
         json.dump(datos, f, indent=4)
 
-# --- Selección de perfil ---
+# --- Cargar datos ---
 datos = cargar()
-perfil = st.selectbox("Selecciona perfil", list(datos.keys()))
+
+# --- Gestión de perfiles ---
+st.subheader("Perfiles")
+perfil_existente = st.selectbox("Selecciona perfil existente", list(datos.keys()))
+nuevo_perfil = st.text_input("O crea un nuevo perfil")
+
+if nuevo_perfil:
+    if nuevo_perfil in datos:
+        st.warning("Este perfil ya existe")
+        perfil = nuevo_perfil
+    else:
+        datos[nuevo_perfil] = []
+        guardar(datos)
+        st.success(f"Perfil '{nuevo_perfil}' creado")
+        perfil = nuevo_perfil
+else:
+    perfil = perfil_existente
 
 # --- Tabs ---
 tab1, tab2 = st.tabs(["➕ Nuevo Entrenamiento", "📊 Historial y progreso"])
