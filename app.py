@@ -62,31 +62,50 @@ with tab1:
         else:
             st.error("❌ Ingresa un ejercicio")
 
-# --- TAB 2 ---
+# --- TAB 2: Historial y progreso ---
 with tab2:
     st.header("📊 Historial y progreso")
     df = cargar_entrenamientos()
 
     if df.empty:
-        st.info("No hay entrenamientos")
+        st.info("No hay entrenamientos guardados.")
     else:
+        # Seleccionar ejercicio
         ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
-        df_filtrado = df[df["ejercicio"] == ejercicio_sel]
+        df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
+        # --- Eliminar entrenamientos ---
+        st.subheader("Eliminar entrenamientos")
         opciones = [
             f"{row['id']} - {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
             for _, row in df_filtrado.iterrows()
         ]
-
-        eliminar = st.multiselect("Eliminar entrenamientos", opciones)
+        eliminar = st.multiselect("Selecciona entrenamientos a eliminar", opciones)
 
         if st.button("Eliminar seleccionados"):
-            ids = [int(e.split(" - ")[0]) for e in eliminar]
-            eliminar_entrenamientos(ids)
-            st.experimental_rerun()
+            if eliminar:
+                # Extraer IDs de los entrenamientos seleccionados
+                ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
+                
+                # Eliminar en la base de datos
+                eliminar_entrenamientos(ids_eliminar)
+                
+                # Mostrar mensaje de éxito
+                st.success(f"✅ {len(ids_eliminar)} entrenamientos eliminados")
+                
+                # Detener la ejecución actual para refrescar la app sin error
+                st.stop()
 
-        st.subheader("📈 Progresión")
-        st.line_chart(df_filtrado["peso"])
+        # --- Progresión y métricas ---
+        df_filtrado = df_filtrado[~df_filtrado["id"].isin([int(sel.split(" - ")[0]) for sel in eliminar])] if eliminar else df_filtrado
 
-        mejor = df_filtrado["peso"].max()
-        st.metric("🏆 Mejor marca", f"{mejor} kg")
+        if not df_filtrado.empty:
+            st.subheader("📈 Progresión del peso")
+            st.line_chart(df_filtrado["peso"])
+
+            mejor = df_filtrado["peso"].max()
+            st.metric("🏆 Mejor marca", f"{mejor} kg")
+
+            df_display = df_filtrado.copy()
+            df_display["Series x Reps"] = df_display["series"].astype(str) + "x" + df_display["reps"].astype(str)
+            st.dataframe(df_display[["fecha", "ejercicio", "peso", "Series x Reps"]])
