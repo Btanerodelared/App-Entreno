@@ -17,8 +17,8 @@ def cargar():
         # Si es lista antigua → convertir a perfiles
         if isinstance(datos, list):
             datos = {
-                "Perfil 1": datos,
-                "Perfil 2": []
+                "Carlos": datos,
+                "David": []
             }
             guardar(datos)
 
@@ -27,8 +27,8 @@ def cargar():
     except:
         # Si no existe el archivo → crear estructura inicial
         datos = {
-            "Perfil 1": [],
-            "Perfil 2": []
+            "Carlos": [],
+            "David": []
         }
         guardar(datos)
         return datos
