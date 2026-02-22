@@ -84,17 +84,10 @@ with tab2:
 
         if st.button("Eliminar seleccionados"):
             if eliminar:
-                # Extraer IDs de los entrenamientos seleccionados
                 ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
-                
-                # Eliminar en la base de datos
                 eliminar_entrenamientos(ids_eliminar)
-                
-                # Mostrar mensaje de éxito
                 st.success(f"✅ {len(ids_eliminar)} entrenamientos eliminados")
-                
-                # Detener la ejecución actual para refrescar la app sin error
-                st.stop()
+                st.stop()  # detiene la ejecución actual y refresca la app
 
         # --- Progresión y métricas ---
         df_filtrado = df_filtrado[~df_filtrado["id"].isin([int(sel.split(" - ")[0]) for sel in eliminar])] if eliminar else df_filtrado
