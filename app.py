@@ -13,125 +13,111 @@ def cargar():
     try:
         with open(archivo, "r") as f:
             datos = json.load(f)
-
-        # Si es lista antigua → convertir a perfiles
         if isinstance(datos, list):
-            datos = {
-                "Carlos": datos,
-                "David": []
-            }
+            datos = {"Carlos": datos, "David": []}
             guardar(datos)
-
         return datos
-
     except:
-        # Si no existe el archivo → crear estructura inicial
-        datos = {
-            "Carlos": [],
-            "David": []
-        }
+        datos = {"Carlos": [], "David": []}
         guardar(datos)
         return datos
 
 def guardar(datos):
     with open(archivo, "w") as f:
-        json.dump(datos, f)
+        json.dump(datos, f, indent=4)
 
 # --- Selección de perfil ---
 datos = cargar()
-
-if not datos:
-    datos = {"Carlos": [], "David": []}
-    guardar(datos)
-
 perfil = st.selectbox("Selecciona perfil", list(datos.keys()))
 
-# --- Añadir entrenamiento ---
-st.header("➕ Nuevo Entrenamiento")
-col1, col2, col3 = st.columns(3)
-with col1:
-    ejercicio = st.text_input("Ejercicio")
-with col2:
-    series = st.number_input("Series", min_value=1, step=1)
-with col3:
-    reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
-peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
+# --- Tabs ---
+tab1, tab2 = st.tabs(["➕ Nuevo Entrenamiento", "📊 Historial y progreso"])
 
-if st.button("Guardar 💾"):
-    datos = cargar()
-    datos[perfil].append({
-        "fecha": str(datetime.now().date()),
-        "ejercicio": ejercicio,
-        "series": series,
-        "reps": reps,
-        "peso": peso
-    })
-    guardar(datos)
-    st.success("✅ Entrenamiento guardado")
+# --- TAB 1: Añadir entrenamiento ---
+with tab1:
+    st.header("➕ Nuevo Entrenamiento")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        ejercicio = st.text_input("Ejercicio")
+    with col2:
+        series = st.number_input("Series", min_value=1, step=1)
+    with col3:
+        reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
+    peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
 
-# --- Historial y progreso ---
-st.header("📊 Historial y progreso")
+    if st.button("Guardar 💾"):
+        if not ejercicio.strip():
+            st.error("❌ Por favor ingresa un ejercicio")
+        else:
+            datos[perfil].append({
+                "fecha": str(datetime.now().date()),
+                "ejercicio": ejercicio,
+                "series": series,
+                "reps": reps,
+                "peso": peso
+            })
+            guardar(datos)
+            st.success("✅ Entrenamiento guardado")
 
-datos = cargar()
-datos_perfil = datos.get(perfil, [])
+# --- TAB 2: Historial y progreso ---
+with tab2:
+    st.header("📊 Historial y progreso")
+    datos_perfil = datos.get(perfil, [])
 
-if datos_perfil:
-    df = pd.DataFrame(datos_perfil)
+    if not datos_perfil:
+        st.info("Este perfil aún no tiene entrenamientos.")
+    else:
+        df = pd.DataFrame(datos_perfil)
 
-    ejercicio_sel = st.selectbox(
-        "Selecciona ejercicio",
-        df["ejercicio"].unique()
-    )
-
-    df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
-
-    # --- Eliminar entrenamientos ---
-    st.subheader("Eliminar entrenamientos")
-    eliminar_ids = []
-    for i, row in df_filtrado.iterrows():
-        if st.button(
-            f"Eliminar: {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg",
-            key=f"del_{perfil}_{i}"
-        ):
-            eliminar_ids.append(i)
-
-    if eliminar_ids:
-        for i in sorted(eliminar_ids, reverse=True):
-            row = df_filtrado.iloc[i]
-            datos[perfil] = [
-                d for d in datos[perfil]
-                if not (
-                    d['fecha'] == row['fecha'] and
-                    d['ejercicio'] == row['ejercicio'] and
-                    d['peso'] == row['peso'] and
-                    d['reps'] == row['reps'] and
-                    d['series'] == row['series']
-                )
-            ]
-        guardar(datos)
-        st.success("✅ Entrenamiento eliminado")
-        df_filtrado = pd.DataFrame(datos[perfil])
-
-    # --- Progresión del peso ---
-    if not df_filtrado.empty:
-        st.subheader("📈 Progresión del peso")
-        st.line_chart(df_filtrado["peso"])
-
-        mejor = df_filtrado["peso"].max()
-        st.metric("🏆 Mejor marca", f"{mejor} kg")
-
-        df_filtrado_display = df_filtrado.copy()
-        df_filtrado_display["Series x Reps"] = (
-            df_filtrado_display["series"].astype(str)
-            + "x"
-            + df_filtrado_display["reps"].astype(str)
+        # Seleccionar ejercicio
+        ejercicio_sel = st.selectbox(
+            "Selecciona ejercicio",
+            df["ejercicio"].unique()
         )
+        df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
-        st.dataframe(
-            df_filtrado_display[
-                ["fecha", "ejercicio", "peso", "Series x Reps"]
-            ]
-        )
+        # --- Eliminar entrenamientos ---
+        st.subheader("Eliminar entrenamientos")
+        opciones = [
+            f"{row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
+            for i, row in df_filtrado.iterrows()
+        ]
+        eliminar = st.multiselect("Selecciona entrenamientos a eliminar", opciones)
+        if st.button("Eliminar seleccionados"):
+            if eliminar:
+                for sel in eliminar:
+                    fecha, resto = sel.split(" - ")
+                    series_reps, peso_str = resto.split(" - ")
+                    s, r = series_reps.split("x")
+                    p = float(peso_str.replace("kg", ""))
+                    datos[perfil] = [
+                        d for d in datos[perfil]
+                        if not (
+                            d['fecha'] == fecha and
+                            d['ejercicio'] == ejercicio_sel and
+                            d['series'] == int(s) and
+                            d['reps'] == int(r) and
+                            d['peso'] == p
+                        )
+                    ]
+                guardar(datos)
+                st.success("✅ Entrenamientos eliminados")
+                st.experimental_rerun()
 
-else:
-    st.info("Este perfil aún no tiene entrenamientos.")
+        # --- Progresión y métricas ---
+        if not df_filtrado.empty:
+            st.subheader("📈 Progresión del peso")
+            st.line_chart(df_filtrado["peso"])
+
+            df_filtrado["Volumen"] = df_filtrado["series"] * df_filtrado["reps"] * df_filtrado["peso"]
+            st.subheader("🏋️ Volumen total por sesión")
+            st.line_chart(df_filtrado["Volumen"])
+
+            mejor = df_filtrado["peso"].max()
+            mayor_volumen = df_filtrado["Volumen"].max()
+            st.metric("🏆 Mejor marca", f"{mejor} kg")
+            st.metric("🔥 Mayor volumen", f"{mayor_volumen} kg")
+
+            df_display = df_filtrado.copy()
+            df_display["Series x Reps"] = df_display["series"].astype(str) + "x" + df_display["reps"].astype(str)
+            st.dataframe(df_display[["fecha", "ejercicio", "peso", "Series x Reps", "Volumen"]])
