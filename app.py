@@ -8,7 +8,10 @@ st.title("💪 Gym")
 
 # Conexión a Supabase
 DATABASE_URL = st.secrets["DATABASE_URL"]
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"sslmode": "require"}
+)
 
 # --- Funciones ---
 def guardar_entrenamiento(ejercicio, series, reps, peso):
