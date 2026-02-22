@@ -13,10 +13,15 @@ def cargar():
     try:
         with open(archivo, "r") as f:
             datos = json.load(f)
+
+        # Si es lista → convertir a diccionario {nombre: entrenamientos}
         if isinstance(datos, list):
-            datos = {"Carlos": datos, "David": []}
-            guardar(datos)
+            datos_dict = {p['nombre']: p.get('entrenamientos', []) for p in datos}
+            guardar(datos_dict)
+            return datos_dict
+
         return datos
+
     except:
         datos = {"Carlos": [], "David": []}
         guardar(datos)
