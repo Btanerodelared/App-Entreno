@@ -1,60 +1,45 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import sqlite3
+from sqlalchemy import create_engine, text
 
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("💪 Gym")
 
-DB_FILE = "entrenamientos.db"
+# Conexión a Supabase
+DATABASE_URL = st.secrets["DATABASE_URL"]
+engine = create_engine(DATABASE_URL)
 
-# --- Funciones de base de datos ---
-def crear_tabla():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS entrenamientos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fecha TEXT,
-            ejercicio TEXT,
-            series INTEGER,
-            reps INTEGER,
-            peso REAL
-        )
-    """)
-    conn.commit()
-    conn.close()
-
+# --- Funciones ---
 def guardar_entrenamiento(ejercicio, series, reps, peso):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("""
-        INSERT INTO entrenamientos (fecha, ejercicio, series, reps, peso)
-        VALUES (?, ?, ?, ?, ?)
-    """, (str(datetime.now().date()), ejercicio, series, reps, peso))
-    conn.commit()
-    conn.close()
+    with engine.connect() as conn:
+        conn.execute(text("""
+            INSERT INTO entrenamientos (fecha, ejercicio, series, reps, peso)
+            VALUES (:fecha, :ejercicio, :series, :reps, :peso)
+        """), {
+            "fecha": str(datetime.now().date()),
+            "ejercicio": ejercicio,
+            "series": series,
+            "reps": reps,
+            "peso": peso
+        })
+        conn.commit()
 
 def cargar_entrenamientos():
-    conn = sqlite3.connect(DB_FILE)
-    df = pd.read_sql_query("SELECT * FROM entrenamientos", conn)
-    conn.close()
+    with engine.connect() as conn:
+        df = pd.read_sql("SELECT * FROM entrenamientos", conn)
     return df
 
 def eliminar_entrenamientos(id_list):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.executemany("DELETE FROM entrenamientos WHERE id = ?", [(i,) for i in id_list])
-    conn.commit()
-    conn.close()
-
-# --- Inicializar base de datos ---
-crear_tabla()
+    with engine.connect() as conn:
+        for i in id_list:
+            conn.execute(text("DELETE FROM entrenamientos WHERE id = :id"), {"id": i})
+        conn.commit()
 
 # --- Tabs ---
 tab1, tab2 = st.tabs(["➕ Nuevo Entrenamiento", "📊 Historial y progreso"])
 
-# --- TAB 1: Añadir entrenamiento ---
+# --- TAB 1 ---
 with tab1:
     st.header("➕ Nuevo Entrenamiento")
     col1, col2, col3 = st.columns(3)
@@ -67,46 +52,37 @@ with tab1:
     peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
 
     if st.button("Guardar 💾"):
-        if not ejercicio.strip():
-            st.error("❌ Por favor ingresa un ejercicio")
-        else:
+        if ejercicio.strip():
             guardar_entrenamiento(ejercicio, series, reps, peso)
-            st.success("✅ Entrenamiento guardado")
+            st.success("✅ Guardado")
+        else:
+            st.error("❌ Ingresa un ejercicio")
 
-# --- TAB 2: Historial y progreso ---
+# --- TAB 2 ---
 with tab2:
     st.header("📊 Historial y progreso")
     df = cargar_entrenamientos()
 
     if df.empty:
-        st.info("Aún no hay entrenamientos guardados.")
+        st.info("No hay entrenamientos")
     else:
-        # Seleccionar ejercicio
         ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
-        df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
+        df_filtrado = df[df["ejercicio"] == ejercicio_sel]
 
-        # --- Eliminar entrenamientos ---
-        st.subheader("Eliminar entrenamientos")
         opciones = [
             f"{row['id']} - {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
             for _, row in df_filtrado.iterrows()
         ]
-        eliminar = st.multiselect("Selecciona entrenamientos a eliminar", opciones)
+
+        eliminar = st.multiselect("Eliminar entrenamientos", opciones)
+
         if st.button("Eliminar seleccionados"):
-            if eliminar:
-                ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
-                eliminar_entrenamientos(ids_eliminar)
-                st.success("✅ Entrenamientos eliminados")
-                st.experimental_rerun()
+            ids = [int(e.split(" - ")[0]) for e in eliminar]
+            eliminar_entrenamientos(ids)
+            st.experimental_rerun()
 
-        # --- Progresión y métricas ---
-        if not df_filtrado.empty:
-            st.subheader("📈 Progresión del peso")
-            st.line_chart(df_filtrado["peso"])
+        st.subheader("📈 Progresión")
+        st.line_chart(df_filtrado["peso"])
 
-            mejor = df_filtrado["peso"].max()
-            st.metric("🏆 Mejor marca", f"{mejor} kg")
-
-            df_display = df_filtrado.copy()
-            df_display["Series x Reps"] = df_display["series"].astype(str) + "x" + df_display["reps"].astype(str)
-            st.dataframe(df_display[["fecha", "ejercicio", "peso", "Series x Reps"]])
+        mejor = df_filtrado["peso"].max()
+        st.metric("🏆 Mejor marca", f"{mejor} kg")
