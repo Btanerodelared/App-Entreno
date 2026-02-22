@@ -6,15 +6,16 @@ from sqlalchemy import create_engine, text
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("💪 Gym")
 
-# Conexión a Supabase
+# --- Conexión a Supabase ---
+# Debes haber agregado DATABASE_URL en Secrets
+# usando Transaction Pooler y la contraseña correcta
 DATABASE_URL = st.secrets["DATABASE_URL"]
-
 engine = create_engine(
-    st.secrets["DATABASE_URL"],
+    DATABASE_URL,
     pool_pre_ping=True
 )
 
-# --- Funciones ---
+# --- Funciones de base de datos ---
 def guardar_entrenamiento(ejercicio, series, reps, peso):
     with engine.connect() as conn:
         conn.execute(text("""
@@ -31,7 +32,7 @@ def guardar_entrenamiento(ejercicio, series, reps, peso):
 
 def cargar_entrenamientos():
     with engine.connect() as conn:
-        df = pd.read_sql("SELECT * FROM entrenamientos", conn)
+        df = pd.read_sql("SELECT * FROM entrenamientos ORDER BY fecha ASC", conn)
     return df
 
 def eliminar_entrenamientos(id_list):
@@ -43,7 +44,7 @@ def eliminar_entrenamientos(id_list):
 # --- Tabs ---
 tab1, tab2 = st.tabs(["➕ Nuevo Entrenamiento", "📊 Historial y progreso"])
 
-# --- TAB 1 ---
+# --- TAB 1: Añadir entrenamiento ---
 with tab1:
     st.header("➕ Nuevo Entrenamiento")
     col1, col2, col3 = st.columns(3)
@@ -56,11 +57,13 @@ with tab1:
     peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
 
     if st.button("Guardar 💾"):
-        if ejercicio.strip():
-            guardar_entrenamiento(ejercicio, series, reps, peso)
-            st.success("✅ Guardado")
+        if not ejercicio.strip():
+            st.error("❌ Por favor ingresa un ejercicio")
         else:
-            st.error("❌ Ingresa un ejercicio")
+            guardar_entrenamiento(ejercicio, series, reps, peso)
+            st.success("✅ Entrenamiento guardado")
+            st.experimental_rerun = lambda: st.stop()  # reemplazo seguro
+            st.stop()  # refresca la app automáticamente
 
 # --- TAB 2: Historial y progreso ---
 with tab2:
@@ -87,9 +90,10 @@ with tab2:
                 ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
                 eliminar_entrenamientos(ids_eliminar)
                 st.success(f"✅ {len(ids_eliminar)} entrenamientos eliminados")
-                st.stop()  # detiene la ejecución actual y refresca la app
+                st.stop()  # refresca la app de forma segura
 
         # --- Progresión y métricas ---
+        # Filtrar los eliminados
         df_filtrado = df_filtrado[~df_filtrado["id"].isin([int(sel.split(" - ")[0]) for sel in eliminar])] if eliminar else df_filtrado
 
         if not df_filtrado.empty:
