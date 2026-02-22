@@ -16,16 +16,14 @@ def cargar():
         try:
             with open(archivo, "r") as f:
                 datos = json.load(f)
-            # Convertir lista a dict si es necesario
-            if isinstance(datos, list):
-                datos_dict = {p['nombre']: p.get('entrenamientos', []) for p in datos}
-                guardar(datos_dict)
-                return datos_dict
+            # Convertir lista vacía si es None
+            if not isinstance(datos, list):
+                datos = []
             return datos
         except:
             pass
-    # Si no existe o hay error → crear datos iniciales vacíos
-    datos = {}
+    # Si no existe o hay error → crear lista vacía
+    datos = []
     guardar(datos)
     return datos
 
@@ -36,23 +34,6 @@ def guardar(datos):
 
 # --- Cargar datos ---
 datos = cargar()
-
-# --- Gestión de perfiles ---
-st.subheader("Perfiles")
-perfil_existente = st.selectbox("Selecciona perfil existente", list(datos.keys()))
-nuevo_perfil = st.text_input("O crea un nuevo perfil")
-
-if nuevo_perfil:
-    if nuevo_perfil in datos:
-        st.warning("Este perfil ya existe")
-        perfil = nuevo_perfil
-    else:
-        datos[nuevo_perfil] = []
-        guardar(datos)
-        st.success(f"Perfil '{nuevo_perfil}' creado")
-        perfil = nuevo_perfil
-else:
-    perfil = perfil_existente
 
 # --- Tabs ---
 tab1, tab2 = st.tabs(["➕ Nuevo Entrenamiento", "📊 Historial y progreso"])
@@ -73,7 +54,7 @@ with tab1:
         if not ejercicio.strip():
             st.error("❌ Por favor ingresa un ejercicio")
         else:
-            datos[perfil].append({
+            datos.append({
                 "fecha": str(datetime.now().date()),
                 "ejercicio": ejercicio,
                 "series": series,
@@ -86,12 +67,11 @@ with tab1:
 # --- TAB 2: Historial y progreso ---
 with tab2:
     st.header("📊 Historial y progreso")
-    datos_perfil = datos.get(perfil, [])
 
-    if not datos_perfil:
-        st.info("Este perfil aún no tiene entrenamientos.")
+    if not datos:
+        st.info("Aún no hay entrenamientos guardados.")
     else:
-        df = pd.DataFrame(datos_perfil)
+        df = pd.DataFrame(datos)
 
         # Seleccionar ejercicio
         ejercicio_sel = st.selectbox(
@@ -114,8 +94,8 @@ with tab2:
                     series_reps, peso_str = resto.split(" - ")
                     s, r = series_reps.split("x")
                     p = float(peso_str.replace("kg", ""))
-                    datos[perfil] = [
-                        d for d in datos[perfil]
+                    datos = [
+                        d for d in datos
                         if not (
                             d['fecha'] == fecha and
                             d['ejercicio'] == ejercicio_sel and
