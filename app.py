@@ -7,13 +7,8 @@ st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("💪 Gym")
 
 # --- Conexión a Supabase ---
-# Debes haber agregado DATABASE_URL en Secrets
-# usando Transaction Pooler y la contraseña correcta
 DATABASE_URL = st.secrets["DATABASE_URL"]
-engine = create_engine(
-    DATABASE_URL,
-    pool_pre_ping=True
-)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 # --- Funciones de base de datos ---
 def guardar_entrenamiento(ejercicio, series, reps, peso):
@@ -62,7 +57,6 @@ with tab1:
         else:
             guardar_entrenamiento(ejercicio, series, reps, peso)
             st.success("✅ Entrenamiento guardado")
-            st.experimental_rerun = lambda: st.stop()  # reemplazo seguro
             st.stop()  # refresca la app automáticamente
 
 # --- TAB 2: Historial y progreso ---
@@ -94,7 +88,9 @@ with tab2:
 
         # --- Progresión y métricas ---
         # Filtrar los eliminados
-        df_filtrado = df_filtrado[~df_filtrado["id"].isin([int(sel.split(" - ")[0]) for sel in eliminar])] if eliminar else df_filtrado
+        if eliminar:
+            ids_eliminados = [int(sel.split(" - ")[0]) for sel in eliminar]
+            df_filtrado = df_filtrado[~df_filtrado["id"].isin(ids_eliminados)]
 
         if not df_filtrado.empty:
             st.subheader("📈 Progresión del peso")
