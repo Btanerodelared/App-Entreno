@@ -89,9 +89,9 @@ with tab2:
 
         # --- Progresión y métricas ---
         # Filtrar los eliminados
-        if eliminar:
-            ids_eliminados = [int(sel.split(" - ")[0]) for sel in eliminar]
-            df_filtrado = df_filtrado[~df_filtrado["id"].isin(ids_eliminados)]
+        #if eliminar:
+        #    ids_eliminados = [int(sel.split(" - ")[0]) for sel in eliminar]
+        #    df_filtrado = df_filtrado[~df_filtrado["id"].isin(ids_eliminados)]
 
         if not df_filtrado.empty:
             st.subheader("📈 Progresión del peso")
