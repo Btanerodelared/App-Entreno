@@ -85,7 +85,7 @@ with tab2:
                 ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
                 eliminar_entrenamientos(ids_eliminar)
                 st.success(f"✅ {len(ids_eliminar)} entrenamientos eliminados")
-                st.stop()  # refresca la app automáticamente
+                st.rerun()  # refresca la app automáticamente
 
         # --- Progresión y métricas ---
         # Filtrar los eliminados
