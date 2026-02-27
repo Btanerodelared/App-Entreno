@@ -99,7 +99,7 @@ with tab2:
 
             # Usar fecha como eje X
             st.line_chart(
-                df_filtrado.set_index("fecha")["peso"]
+                df_filtrado.set_index("id")["peso"]
             )
 
             mejor = df_filtrado["peso"].max()
