@@ -74,21 +74,18 @@ with tab2:
 
         # --- Eliminar entrenamientos ---
         st.subheader("Eliminar entrenamientos")
-        opciones = {
-            f"ID {row['id']} - {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg": row["id"]
+        opciones = [
+            f"{row['id']} - {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
             for _, row in df_filtrado.iterrows()
-        }
-        eliminar = st.multiselect(
-            "Selecciona entrenamientos a eliminar",
-            list(opciones.keys())
-        )
+        ]
+        eliminar = st.multiselect("Selecciona entrenamientos a eliminar", opciones)
 
         if st.button("Eliminar seleccionados"):
             if eliminar:
                 ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
                 eliminar_entrenamientos(ids_eliminar)
                 st.success(f"✅ {len(ids_eliminar)} entrenamientos eliminados")
-                st.rerun()  # refresca la app automáticamente
+                st.stop()  # refresca la app automáticamente
 
         # --- Progresión y métricas ---
         # Filtrar los eliminados
@@ -108,4 +105,4 @@ with tab2:
             st.dataframe(df_display[["fecha", "ejercicio", "peso", "Series x Reps"]])
 
 with tab3:
-    st.header("Prueba")
+    st.header("📊 Historial y progreso")
