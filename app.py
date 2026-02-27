@@ -88,21 +88,33 @@ with tab2:
                 st.rerun()  # refresca la app automáticamente
 
         # --- Progresión y métricas ---
-        # Filtrar los eliminados
-        #if eliminar:
-        #    ids_eliminados = [int(sel.split(" - ")[0]) for sel in eliminar]
-        #    df_filtrado = df_filtrado[~df_filtrado["id"].isin(ids_eliminados)]
-
         if not df_filtrado.empty:
+            # Convertir fecha a datetime
+            df_filtrado["fecha"] = pd.to_datetime(df_filtrado["fecha"])
+
+            # Ordenar por fecha
+            df_filtrado = df_filtrado.sort_values("fecha")
+
             st.subheader("📈 Progresión del peso")
-            st.line_chart(df_filtrado["peso"])
+
+            # Usar fecha como eje X
+            st.line_chart(
+                df_filtrado.set_index("fecha")["peso"]
+            )
 
             mejor = df_filtrado["peso"].max()
             st.metric("🏆 Mejor marca", f"{mejor} kg")
 
             df_display = df_filtrado.copy()
-            df_display["Series x Reps"] = df_display["series"].astype(str) + "x" + df_display["reps"].astype(str)
-            st.dataframe(df_display[["fecha", "ejercicio", "peso", "Series x Reps"]])
+            df_display["Series x Reps"] = (
+                    df_display["series"].astype(str)
+                    + "x"
+                    + df_display["reps"].astype(str)
+            )
+
+            st.dataframe(
+                df_display[["fecha", "ejercicio", "peso", "Series x Reps"]]
+            )
 
 with tab3:
     st.header("📊 Historial y progreso")
