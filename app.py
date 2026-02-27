@@ -89,7 +89,7 @@ with tab2:
 
         # --- Progresión y métricas ---
         # Filtrar los eliminados
-        #if eliminar:
+        if eliminar:
             ids_eliminados = [int(sel.split(" - ")[0]) for sel in eliminar]
         #    df_filtrado = df_filtrado[~df_filtrado["id"].isin(ids_eliminados)]
 
