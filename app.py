@@ -75,7 +75,7 @@ with tab2:
         # --- Eliminar entrenamientos ---
         st.subheader("Eliminar entrenamientos")
         opciones = [
-            f"ID {row['fecha']} - {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
+            f"ID {row['id']} - {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
             for _, row in df_filtrado.iterrows()
         ]
         eliminar = st.multiselect("Selecciona entrenamientos a eliminar", opciones)
