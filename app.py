@@ -53,7 +53,7 @@ with tab1:
         ejercicio = st.text_input("Ejercicio")
     with col2:
         series = st.number_input("Series", min_value=1, step=1)
-    with col:
+    with col3:
         reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
 
     peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
