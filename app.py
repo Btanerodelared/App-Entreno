@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 from datetime import datetime
 from sqlalchemy import create_engine, text
 
@@ -96,18 +97,34 @@ with tab2:
 
         # --- Progresión y métricas ---
         if not df_filtrado.empty:
-            # Convertir fecha a datetime
+            # Convertir y ordenar fecha
             df_filtrado["fecha"] = pd.to_datetime(df_filtrado["fecha"])
-
-            # Ordenar por fecha
             df_filtrado = df_filtrado.sort_values("fecha")
 
             st.subheader("📈 Progresión del peso")
 
-            # Usar fecha como eje X
-            st.line_chart(
-                df_filtrado.set_index("fecha")["peso"]
-            )
+            # Crear gráfico profesional
+            chart = alt.Chart(df_filtrado).mark_line(point=True).encode(
+                x=alt.X(
+                    "fecha:T",
+                    title="Fecha",
+                    axis=alt.Axis(format="%d-%m-%Y")
+                ),
+                y=alt.Y(
+                    "peso:Q",
+                    title="Peso (kg)"
+                ),
+                tooltip=[
+                    alt.Tooltip("fecha:T", title="Fecha", format="%d-%m-%Y"),
+                    alt.Tooltip("peso:Q", title="Peso (kg)"),
+                    alt.Tooltip("series:Q", title="Series"),
+                    alt.Tooltip("reps:Q", title="Reps")
+                ]
+            ).properties(
+                height=400
+            ).interactive()
+
+            st.altair_chart(chart, use_container_width=True)
 
             mejor = df_filtrado["peso"].max()
             st.metric("🏆 Mejor marca", f"{mejor} kg")
