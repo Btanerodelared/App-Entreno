@@ -9,7 +9,8 @@ EJERCICIOS = [
     "Sendadilla",
     "Peso Muerto",
     "Press Militar Mancuernas",
-    "Curl Biceps"
+    "Curl Biceps",
+    "Pruebas"
 ]
 
 st.set_page_config(page_title="Entrenos", page_icon="💪")
