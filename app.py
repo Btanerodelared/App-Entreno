@@ -107,7 +107,7 @@ with tab2:
             chart = alt.Chart(df_filtrado).mark_line(point=True).encode(
                 x=alt.X(
                     "fecha:T",
-                    title="Fecha",
+                    title="Fecha (DD-MM-AAAA)",
                     axis=alt.Axis(format="%d-%m-%Y")
                 ),
                 y=alt.Y(
