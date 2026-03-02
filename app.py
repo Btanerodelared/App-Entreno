@@ -66,7 +66,9 @@ with tab1:
     with col3:
         reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
 
-    peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
+    col_peso, _ = st.columns([1, 3])  # 1 parte para peso, 3 partes espacio vacío
+    with col_peso:
+        peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
 
     if st.button("Guardar 💾"):
         if not ejercicio.strip():
