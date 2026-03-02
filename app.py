@@ -152,4 +152,4 @@ with tab2:
             )
 
 with tab3:
-    st.header("📊 Historial y progreso")
+    st.header("Modificaciones")
