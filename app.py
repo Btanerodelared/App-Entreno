@@ -115,7 +115,7 @@ with tab2:
                     title="Peso (kg)"
                 ),
                 tooltip=[
-                    alt.Tooltip("fecha:T", title="Fecha", format="%d-%m-%Y"),
+                    alt.Tooltip("fecha:T", title="Fecha (DD-MM-AAAA)", format="%d-%m-%Y"),
                     alt.Tooltip("peso:Q", title="Peso (kg)"),
                     alt.Tooltip("series:Q", title="Series"),
                     alt.Tooltip("reps:Q", title="Reps")
@@ -130,6 +130,9 @@ with tab2:
             st.metric("🏆 Mejor marca", f"{mejor} kg")
 
             df_display = df_filtrado.copy()
+
+            df_display["fecha"] = pd.to_datetime(df_display["fecha"]).dt.strftime("%d-%m-%Y")
+
             df_display["Series x Reps"] = (
                     df_display["series"].astype(str)
                     + "x"
