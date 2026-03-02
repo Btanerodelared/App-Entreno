@@ -43,7 +43,10 @@ tab1, tab2, tab3 = st.tabs(["Nuevo Entrenamiento", "📊 Historial y progreso", 
 with tab1:
     st.header("➕ Nuevo Entrenamiento")
 
-    fecha = st.date_input("Fecha de nuevo entrenamiento", value=datetime.now.date())
+    fecha = st.date_input(
+        "Fecha de nuevo entrenamiento",
+        value=datetime.now().date()
+    )
 
     col1, col2, col3 = st.columns(3)
     with col1:
