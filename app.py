@@ -11,13 +11,13 @@ DATABASE_URL = st.secrets["DATABASE_URL"]
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 # --- Funciones de base de datos ---
-def guardar_entrenamiento(ejercicio, series, reps, peso):
+def guardar_entrenamiento(fecha,ejercicio, series, reps, peso):
     with engine.connect() as conn:
         conn.execute(text("""
             INSERT INTO entrenamientos (fecha, ejercicio, series, reps, peso)
             VALUES (:fecha, :ejercicio, :series, :reps, :peso)
         """), {
-            "fecha": str(datetime.now().date()),
+            "fecha": fecha,
             "ejercicio": ejercicio,
             "series": series,
             "reps": reps,
@@ -42,20 +42,24 @@ tab1, tab2, tab3 = st.tabs(["Nuevo Entrenamiento", "📊 Historial y progreso", 
 # --- TAB 1: Añadir entrenamiento ---
 with tab1:
     st.header("➕ Nuevo Entrenamiento")
+
+    fecha = st.date_input("Fecha de nuevo entrenamiento", value=datetime.now.date())
+
     col1, col2, col3 = st.columns(3)
     with col1:
         ejercicio = st.text_input("Ejercicio")
     with col2:
         series = st.number_input("Series", min_value=1, step=1)
-    with col3:
+    with col:
         reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
+
     peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
 
     if st.button("Guardar 💾"):
         if not ejercicio.strip():
             st.error("❌ Por favor ingresa un ejercicio")
         else:
-            guardar_entrenamiento(ejercicio, series, reps, peso)
+            guardar_entrenamiento(str(fecha),ejercicio, series, reps, peso)
             st.success("✅ Entrenamiento guardado")
             # recargar los datos de inmediato
             df = cargar_entrenamientos()
@@ -99,7 +103,7 @@ with tab2:
 
             # Usar fecha como eje X
             st.line_chart(
-                df_filtrado.set_index("id")["peso"]
+                df_filtrado.set_index("fecha")["peso"]
             )
 
             mejor = df_filtrado["peso"].max()
