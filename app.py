@@ -4,6 +4,14 @@ import altair as alt
 from datetime import datetime
 from sqlalchemy import create_engine, text
 
+EJERCICIOS = [
+    "Press Banca",
+    "Sendadilla",
+    "Peso Muerto",
+    "Press Militar Mancuernas",
+    "Curl Biceps"
+]
+
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("💪 Gym")
 
@@ -51,7 +59,7 @@ with tab1:
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        ejercicio = st.text_input("Ejercicio")
+        ejercicio = st.text_input("Ejercicio", EJERCICIOS)
     with col2:
         series = st.number_input("Series", min_value=1, step=1)
     with col3:
