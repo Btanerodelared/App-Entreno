@@ -11,6 +11,7 @@ EJERCICIOS = [
     "Press Militar Mancuernas",
     "Curl Biceps",
     "Bulgaras",
+    "Remo Bajo - Barra",
     "Pruebas"
 ]
 
