@@ -181,9 +181,24 @@ with (tab2):
                     + df_display["reps"].astype(str)
             )
 
+            df_tabla = df_display[["fecha", "ejercicio", "peso", "Series x Reps"]].copy()
+
+            styled_df = (
+                df_tabla.style
+                .set_properties(**{
+                    "text-align": "center",
+                    "font-size": "14px"
+                })
+                .set_table_styles([
+                    {"selector": "th", "props": [("text-align", "center")]},
+                    {"selector": "td", "props": [("padding", "6px")]},
+                ])
+            )
+
             st.dataframe(
-                df_display[["fecha", "ejercicio", "peso", "Series x Reps"]],
-                hide_index=True
+                styled_df,
+                hide_index=True,
+                use_container_width=True
             )
 
 with tab3:
