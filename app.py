@@ -91,13 +91,14 @@ with tab1:
         value=datetime.now().date()
     )
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         grupo = st.selectbox("Grupo muscular", list(EJERCICIOS.keys()))
-        ejercicio = st.selectbox("Ejercicio", EJERCICIOS[grupo])
     with col2:
-        series = st.number_input("Series", min_value=1, step=1)
+        ejercicio = st.selectbox("Ejercicio", EJERCICIOS[grupo])
     with col3:
+        series = st.number_input("Series", min_value=1, step=1)
+    with col4:
         reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
 
     col_peso, _ = st.columns([1, 3])  # 1 parte para peso, 3 partes espacio vacío
