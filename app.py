@@ -38,6 +38,9 @@ EJERCICIOS = [
     "Pruebas"
 ]
 
+def es_separador(texto):
+    return texto.startswith("-----------")
+
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("💪 Gym")
 
