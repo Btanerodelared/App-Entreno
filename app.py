@@ -182,7 +182,7 @@ with (tab2):
             )
 
             st.dataframe(
-                df_display[["Fecha", "Ejercicio", "Peso", "Series x Reps"]],
+                df_display[["fecha", "ejercicio", "peso", "Series x Reps"]],
                 hide_index=True
             )
 
