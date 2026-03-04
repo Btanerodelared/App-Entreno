@@ -12,6 +12,8 @@ EJERCICIOS = [
     "Mariposa",
     "-----------PIERNA-----------",
     "Sendadilla",
+    "Extension Cuadriceps",
+    "Extension Maquina",
     "Peso Muerto",
     "Peso Rumano",
     "Bulgaras",
