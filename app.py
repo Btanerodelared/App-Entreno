@@ -10,6 +10,7 @@ EJERCICIOS = [
     "Peso Muerto",
     "Press Militar Mancuernas",
     "Curl Biceps",
+    "Bulgaras"
     "Pruebas"
 ]
 
