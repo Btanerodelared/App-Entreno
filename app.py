@@ -172,8 +172,8 @@ with tab3:
         st.info("No hay entrenamientos guardados.")
     else:
         # Seleccionar ejercicio
-        ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
-        df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
+        ejercicio_sel2 = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
+        df_filtrado = df[df["ejercicio"] == ejercicio_sel2].reset_index(drop=True)
 
         # --- Eliminar entrenamientos ---
         st.subheader("Eliminar entrenamientos")
