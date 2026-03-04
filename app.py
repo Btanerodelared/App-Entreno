@@ -126,10 +126,14 @@ with (tab2):
         st.info("No hay entrenamientos guardados.")
     else:
         # Seleccionar ejercicio
-        col_selc_ejercicio, _ = st.columns([1, 3])  # 1 parte para peso, 3 partes espacio vacío
+        col_selc_ejercicio, _ = st.columns([1, 3])
+
         with col_selc_ejercicio:
-            ejercicio_sel = (st.number_input("Peso (kg)", min_value=0.0, step=2.5),
-                st.selectbox("Selecciona ejercicio", df["ejercicio"].unique(), key="seleccionar_ejercicio"))
+            ejercicio_sel = st.selectbox(
+                "Selecciona ejercicio",
+                df["ejercicio"].unique(),
+                key="seleccionar_ejercicio"
+            )
 
         df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
