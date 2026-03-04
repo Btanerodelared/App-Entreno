@@ -11,7 +11,7 @@ EJERCICIOS = [
     "Pecho Polea Alta",
     "Mariposa",
     "-----------PIERNA-----------",
-    "Sendadilla",
+    "Sentadilla",
     "Extension Cuadriceps",
     "Extension Maquina",
     "Peso Muerto",
@@ -33,7 +33,7 @@ EJERCICIOS = [
     "Biceps Barra Z",
     "-----------TRICEPS-----------",
     "Press Frances",
-    "Fondos,",
+    "Fondos",
     "Triceps Polea",
     "Pruebas"
 ]
@@ -113,7 +113,7 @@ with tab2:
         st.info("No hay entrenamientos guardados.")
     else:
         # Seleccionar ejercicio
-        ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
+        ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique(), key="seleccionar_ejercicio")
         df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
         # --- Progresión y métricas ---
@@ -172,8 +172,8 @@ with tab3:
         st.info("No hay entrenamientos guardados.")
     else:
         # Seleccionar ejercicio
-        ejercicio_sel2 = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
-        df_filtrado = df[df["ejercicio"] == ejercicio_sel2].reset_index(drop=True)
+        ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique(), key="modificar_ejercicio")
+        df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
         # --- Eliminar entrenamientos ---
         st.subheader("Eliminar entrenamientos")
