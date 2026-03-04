@@ -116,21 +116,6 @@ with tab2:
         ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
         df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
-        # --- Eliminar entrenamientos ---
-        st.subheader("Eliminar entrenamientos")
-        opciones = [
-            f"{row['id']} - {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
-            for _, row in df_filtrado.iterrows()
-        ]
-        eliminar = st.multiselect("Selecciona entrenamientos a eliminar", opciones)
-
-        if st.button("Eliminar seleccionados"):
-            if eliminar:
-                ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
-                eliminar_entrenamientos(ids_eliminar)
-                st.success(f"✅ {len(ids_eliminar)} entrenamientos eliminados")
-                st.rerun()  # refresca la app automáticamente
-
         # --- Progresión y métricas ---
         if not df_filtrado.empty:
             # Convertir y ordenar fecha
@@ -181,3 +166,26 @@ with tab2:
 
 with tab3:
     st.header("Modificaciones")
+    df = cargar_entrenamientos()
+
+    if df.empty:
+        st.info("No hay entrenamientos guardados.")
+    else:
+        # Seleccionar ejercicio
+        ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique())
+        df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
+
+        # --- Eliminar entrenamientos ---
+        st.subheader("Eliminar entrenamientos")
+        opciones = [
+            f"{row['id']} - {row['fecha']} - {row['series']}x{row['reps']} - {row['peso']}kg"
+            for _, row in df_filtrado.iterrows()
+        ]
+        eliminar = st.multiselect("Selecciona entrenamientos a eliminar", opciones)
+
+        if st.button("Eliminar seleccionados"):
+            if eliminar:
+                ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
+                eliminar_entrenamientos(ids_eliminar)
+                st.success(f"✅ {len(ids_eliminar)} entrenamientos eliminados")
+                st.rerun()  # refresca la app automáticamente
