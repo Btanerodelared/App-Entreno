@@ -181,11 +181,10 @@ with (tab2):
                     + df_display["reps"].astype(str)
             )
 
-            styled_df = df_display[["fecha", "ejercicio", "peso", "Series x Reps"]].style.set_properties(
-                **{"text-align": "left"}
+            st.dataframe(
+                df_display[["Fecha", "Ejercicio", "Peso", "Series x Reps"]],
+                hide_index=True
             )
-
-            st.dataframe(styled_df, hide_index=True)
 
 with tab3:
     st.header("Modificaciones")
