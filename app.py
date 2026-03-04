@@ -5,13 +5,34 @@ from datetime import datetime
 from sqlalchemy import create_engine, text
 
 EJERCICIOS = [
+    "----PECHO----",
     "Press Banca",
+    "Pecho Polea Baja",
+    "Pecho Polea Alta",
+    "Mariposa",
+    "----PIERNA----",
     "Sendadilla",
     "Peso Muerto",
-    "Press Militar Mancuernas",
-    "Curl Biceps",
+    "Peso Rumano",
     "Bulgaras",
+    "----ESPALDA----",
     "Remo Bajo - Barra",
+    "Remo Alto",
+    "Jalon al pecho",
+    "Lumbar",
+    "Dominadas",
+    "Aperturas",
+    "----HOMBRO----",
+    "Press Militar Mancuernas",
+    "Hombro Polea Baja",
+    "Hombro Horizontal",
+    "----BICEPS----",
+    "Curl Biceps",
+    "Biceps Barra Z",
+    "----TRICEPS----",
+    "Press Frances",
+    "Fondos,",
+    "Triceps Polea",
     "Pruebas"
 ]
 
