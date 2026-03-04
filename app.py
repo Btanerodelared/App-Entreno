@@ -126,7 +126,7 @@ with (tab2):
         st.info("No hay entrenamientos guardados.")
     else:
         # Seleccionar ejercicio
-        col_selc_ejercicio, _ = st.columns([1, 3])
+        col_selc_ejercicio, _ = st.columns([1, 2])
 
         with col_selc_ejercicio:
             ejercicio_sel = st.selectbox(
