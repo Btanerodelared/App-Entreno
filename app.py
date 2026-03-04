@@ -41,7 +41,7 @@ EJERCICIOS = {
         "Fondos",
         "Triceps Polea"
     ],
-    "Pruebas": [
+    "PRUEBAS": [
         "Prueba"
     ]
 }
@@ -87,7 +87,7 @@ tab1, tab2, tab3 = st.tabs(["Nuevo Entrenamiento", "📊 Historial y progreso", 
 
 # --- TAB 1: Añadir entrenamiento ---
 with tab1:
-    st.header("➕ Nuevo Entrenamiento")
+    st.header("Nuevo Entrenamiento")
 
     fecha = st.date_input(
         "Fecha de nuevo entrenamiento",
@@ -118,7 +118,7 @@ with tab1:
             df = cargar_entrenamientos()
 
 # --- TAB 2: Historial y progreso ---
-with tab2:
+with (tab2):
     st.header("📊 Historial y progreso")
     df = cargar_entrenamientos()
 
@@ -126,7 +126,11 @@ with tab2:
         st.info("No hay entrenamientos guardados.")
     else:
         # Seleccionar ejercicio
-        ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique(), key="seleccionar_ejercicio")
+        col_selc_ejercicio, _ = st.columns([1, 3])  # 1 parte para peso, 3 partes espacio vacío
+        with col_selc_ejercicio:
+            ejercicio_sel = (st.number_input("Peso (kg)", min_value=0.0, step=2.5),
+                st.selectbox("Selecciona ejercicio", df["ejercicio"].unique(), key="seleccionar_ejercicio"))
+
         df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
         # --- Progresión y métricas ---
