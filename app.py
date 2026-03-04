@@ -4,42 +4,47 @@ import altair as alt
 from datetime import datetime
 from sqlalchemy import create_engine, text
 
-EJERCICIOS = [
-    "-----------PECHO-----------",
-    "Press Banca",
-    "Pecho Polea Baja",
-    "Pecho Polea Alta",
-    "Mariposa",
-    "-----------PIERNA-----------",
-    "Sentadilla",
-    "Extension Cuadriceps",
-    "Extension Maquina",
-    "Peso Muerto",
-    "Peso Rumano",
-    "Bulgaras",
-    "-----------ESPALDA-----------",
-    "Remo Bajo - Barra",
-    "Remo Alto",
-    "Jalon al pecho",
-    "Lumbar",
-    "Dominadas",
-    "Aperturas",
-    "-----------HOMBRO-----------",
-    "Press Militar Mancuernas",
-    "Hombro Polea Baja",
-    "Hombro Horizontal",
-    "-----------BICEPS-----------",
-    "Curl Biceps",
-    "Biceps Barra Z",
-    "-----------TRICEPS-----------",
-    "Press Frances",
-    "Fondos",
-    "Triceps Polea",
-    "Pruebas"
-]
+EJERCICIOS = {
+    "PECHO": [
+        "Press Banca",
+        "Pecho Polea Baja",
+        "Pecho Polea Alta",
+        "Mariposa"
+    ],
+    "PIERNA": [
+        "Sentadilla",
+        "Extension Cuadriceps",
+        "Extension Maquina",
+        "Peso Muerto",
+        "Peso Rumano",
+        "Bulgaras"
+    ],
+    "ESPALDA": [
+        "Remo Bajo - Barra",
+        "Remo Alto",
+        "Jalon al pecho",
+        "Lumbar",
+        "Dominadas",
+        "Aperturas"
+    ],
+    "HOMBRO": [
+        "Press Militar Mancuernas",
+        "Hombro Polea Baja",
+        "Hombro Horizontal"
+    ],
+    "BICEPS": [
+        "Curl Biceps",
+        "Biceps Barra Z"
+    ],
+    "TRICEPS": [
+        "Press Frances",
+        "Fondos",
+        "Triceps Polea"
+    ]
+}
 
-def es_separador(texto: str) -> bool:
-    return texto.startswith("-")
+def es_separador(texto):
+    return texto.startswith("-----------")
 
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("💪 Gym")
@@ -88,11 +93,8 @@ with tab1:
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        ejercicio = st.selectbox(
-            "Ejercicio",
-            EJERCICIOS,
-            format_func=lambda x: f"📂 {x}" if es_separador(x) else f"   {x}"
-        )
+        grupo = st.selectbox("Grupo muscular", list(EJERCICIOS.keys()))
+        ejercicio = st.selectbox("Ejercicio", EJERCICIOS[grupo])
     with col2:
         series = st.number_input("Series", min_value=1, step=1)
     with col3:
