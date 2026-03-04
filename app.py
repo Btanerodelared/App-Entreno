@@ -85,6 +85,7 @@ with tab1:
 
     col1, col2, col3 = st.columns(3)
     with col1:
+        ejercicios_validos = [e for e in EJERCICIOS if "-----" not in e]
         ejercicio = st.selectbox("Ejercicio", EJERCICIOS)
     with col2:
         series = st.number_input("Series", min_value=1, step=1)
