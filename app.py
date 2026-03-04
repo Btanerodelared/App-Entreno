@@ -40,6 +40,9 @@ EJERCICIOS = {
         "Press Frances",
         "Fondos",
         "Triceps Polea"
+    ],
+    "Pruebas": [
+        "Prueba"
     ]
 }
 
