@@ -15,10 +15,14 @@ EJERCICIOS = {
     "PIERNA": [
         "Sentadilla",
         "Extension Cuadriceps",
-        "Extension Maquina",
+        "Prensa",
         "Peso Muerto",
         "Peso Rumano",
-        "Bulgaras"
+        "Bulgaras",
+        "Abductor",
+        "Femoral Sentado",
+        "Hacka",
+        "Gemelo Maquina"
     ],
     "ESPALDA": [
         "Remo Bajo - Barra",
