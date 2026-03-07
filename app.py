@@ -54,15 +54,6 @@ EJERCICIOS = {
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("GYM")
 
-# --- Mensajes de acciones ---
-if "mensaje" in st.session_state:
-    if st.session_state["mensaje"] == "guardado":
-        st.success("✅ Entrenamiento guardado")
-    elif st.session_state["mensaje"] == "eliminado":
-        st.success("✅ Entrenamiento eliminado")
-
-    del st.session_state["mensaje"]
-
 # --- Conexión a Supabase ---
 DATABASE_URL = st.secrets["DATABASE_URL"]
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
@@ -95,7 +86,11 @@ def eliminar_entrenamientos(id_list):
         conn.commit()
 
 # --- Tabs ---
-tab1, tab2, tab3 = st.tabs(["Nuevo Entrenamiento", "📊 Historial y progreso", "Modificar entrenos"])
+tab1, tab2, tab3 = st.tabs(
+    ["Nuevo Entrenamiento",
+     "📊 Historial y progreso",
+     "Modificar entrenos"]
+)
 
 # --- TAB 1: Añadir entrenamiento ---
 with tab1:
@@ -184,7 +179,7 @@ with (tab2):
             )
 
             # Crear gráfico
-            chart = alt.Chart(df_filtrado).mark_line(point=True).encode(
+            chart = alt.Chart(df_filtrado).mark_line(point=alt.OverlayMarkDef(size=80))(
                 x=alt.X(
                     "fecha:T",
                     title="Fecha (DD-MM-AAAA)",
@@ -214,7 +209,7 @@ with tab3:
     if st.session_state.get("mensaje_tab3"):
         st.success("✅ Entrenamiento eliminado")
         del st.session_state["mensaje_tab3"]
-        
+
     st.header("Modificaciones")
     df = cargar_entrenamientos()
 
@@ -222,7 +217,11 @@ with tab3:
         st.info("No hay entrenamientos guardados.")
     else:
         # Seleccionar ejercicio
-        ejercicio_sel = st.selectbox("Selecciona ejercicio", df["ejercicio"].unique(), key="modificar_ejercicio")
+        ejercicio_sel = st.selectbox(
+            "Selecciona ejercicio",
+            sorted(df["ejercicio"].unique()),
+            key="modificar_ejercicio"
+        )
         df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
 
         # --- Eliminar entrenamientos ---
