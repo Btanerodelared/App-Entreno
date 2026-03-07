@@ -99,6 +99,10 @@ tab1, tab2, tab3 = st.tabs(["Nuevo Entrenamiento", "📊 Historial y progreso", 
 
 # --- TAB 1: Añadir entrenamiento ---
 with tab1:
+    if st.session_state.get("mensaje_tab1"):
+        st.success("✅ Entrenamiento guardado")
+        del st.session_state["mensaje_tab1"]
+
     st.header("Nuevo Entrenamiento")
 
     fecha = st.date_input(
@@ -126,7 +130,7 @@ with tab1:
         else:
             guardar_entrenamiento(fecha, ejercicio, series, reps, peso)
             st.cache_data.clear()
-            st.session_state["mensaje"] = "guardado"
+            st.session_state["mensaje_tab1"] = True
             st.rerun()
 
 # --- TAB 2: Historial y progreso ---
@@ -207,6 +211,10 @@ with (tab2):
 
 # --- TAB 3: Modificaciones ---
 with tab3:
+    if st.session_state.get("mensaje_tab3"):
+        st.success("✅ Entrenamiento eliminado")
+        del st.session_state["mensaje_tab3"]
+        
     st.header("Modificaciones")
     df = cargar_entrenamientos()
 
@@ -230,5 +238,5 @@ with tab3:
                 ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
                 eliminar_entrenamientos(ids_eliminar)
                 st.cache_data.clear()
-                st.session_state["mensaje"] = "eliminado"
+                st.session_state["mensaje_tab3"] = True
                 st.rerun()
