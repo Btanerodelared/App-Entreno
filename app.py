@@ -54,6 +54,15 @@ EJERCICIOS = {
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("GYM")
 
+# --- Mensajes de acciones ---
+if "mensaje" in st.session_state:
+    if st.session_state["mensaje"] == "guardado":
+        st.success("✅ Entrenamiento guardado")
+    elif st.session_state["mensaje"] == "eliminado":
+        st.success("✅ Entrenamiento eliminado")
+
+    del st.session_state["mensaje"]
+
 # --- Conexión a Supabase ---
 DATABASE_URL = st.secrets["DATABASE_URL"]
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
@@ -117,8 +126,8 @@ with tab1:
         else:
             guardar_entrenamiento(fecha,ejercicio, series, reps, peso)
             st.cache_data.clear()
-            st.rerun()
             st.success("✅ Entrenamiento guardado")
+            st.rerun()
 
 # --- TAB 2: Historial y progreso ---
 with (tab2):
@@ -220,6 +229,6 @@ with tab3:
             if eliminar:
                 ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
                 eliminar_entrenamientos(ids_eliminar)
-                st.success(f"✅ {len(ids_eliminar)} entrenamientos eliminados")
                 st.cache_data.clear()
+                st.session_state["mensaje"] = "eliminado"
                 st.rerun()
