@@ -145,14 +145,23 @@ with (tab2):
         st.info("No hay entrenamientos guardados.")
     else:
         # Seleccionar ejercicio
-
         col_grupo, col_ejercicio = st.columns(2)
+
         with col_grupo:
             grupo_sel = st.selectbox(
                 "Grupo muscular",
                 list(EJERCICIOS.keys()),
                 key="grupo_historial"
             )
+
+        # reiniciar ejercicio si cambia el grupo
+        if "grupo_historial_anterior" not in st.session_state:
+            st.session_state.grupo_historial_anterior = grupo_sel
+
+        if grupo_sel != st.session_state.grupo_historial_anterior:
+            st.session_state.ejercicio_historial = EJERCICIOS[grupo_sel][0]
+            st.session_state.grupo_historial_anterior = grupo_sel
+
         with col_ejercicio:
             ejercicio_sel = st.selectbox(
                 "Ejercicio",
