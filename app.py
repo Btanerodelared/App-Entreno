@@ -179,7 +179,7 @@ with (tab2):
             )
 
             # Crear gráfico
-            chart = alt.Chart(df_filtrado).mark_line(point=alt.OverlayMarkDef(size=80))(
+            chart = alt.Chart(df_filtrado).mark_line(point=True).encode(
                 x=alt.X(
                     "fecha:T",
                     title="Fecha (DD-MM-AAAA)",
