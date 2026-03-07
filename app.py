@@ -156,7 +156,26 @@ with (tab2):
 
             st.subheader("📈 Progresión del peso")
 
-            # Crear gráfico profesional
+            # Crear tabla
+            mejor = df_filtrado["peso"].max()
+            st.metric("🏆 Mejor marca", f"{mejor} kg")
+
+            df_display = df_filtrado.copy()
+
+            df_display["fecha"] = pd.to_datetime(df_display["fecha"]).dt.strftime("%d-%m-%Y")
+
+            df_display["Series x Reps"] = (
+                    df_display["series"].astype(str)
+                    + "x"
+                    + df_display["reps"].astype(str)
+            )
+
+            st.dataframe(
+                df_display[["fecha", "ejercicio", "peso", "Series x Reps"]],
+                hide_index=True
+            )
+
+            # Crear gráfico
             chart = alt.Chart(df_filtrado).mark_line(point=True).encode(
                 x=alt.X(
                     "fecha:T",
@@ -178,24 +197,6 @@ with (tab2):
             ).interactive()
 
             st.altair_chart(chart, use_container_width=True)
-
-            mejor = df_filtrado["peso"].max()
-            st.metric("🏆 Mejor marca", f"{mejor} kg")
-
-            df_display = df_filtrado.copy()
-
-            df_display["fecha"] = pd.to_datetime(df_display["fecha"]).dt.strftime("%d-%m-%Y")
-
-            df_display["Series x Reps"] = (
-                    df_display["series"].astype(str)
-                    + "x"
-                    + df_display["reps"].astype(str)
-            )
-
-            st.dataframe(
-                df_display[["fecha", "ejercicio", "peso", "Series x Reps"]],
-                hide_index=True
-            )
 
 # --- TAB 3: Modificaciones ---
 with tab3:
