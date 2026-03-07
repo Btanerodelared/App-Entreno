@@ -117,7 +117,7 @@ with tab1:
         if not ejercicio.strip():
             st.error("❌ Por favor ingresa un ejercicio")
         else:
-            guardar_entrenamiento(str(fecha),ejercicio, series, reps, peso)
+            guardar_entrenamiento(fecha,ejercicio, series, reps, peso)
             st.success("✅ Entrenamiento guardado")
             # recargar los datos de inmediato
             df = cargar_entrenamientos()
