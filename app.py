@@ -105,36 +105,23 @@ with tab1:
         value=datetime.now().date()
     )
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        grupo = st.selectbox(
-            "Grupo muscular",
-            list(EJERCICIOS.keys()),
-            key="grupo_select"
-        )
-    with col2:
-        ejercicio = st.selectbox(
-            "Ejercicio",
-            EJERCICIOS[grupo],
-            key=f"ejercicio_{grupo}"
-        )
-    with col3:
-        series = st.number_input("Series", min_value=1, step=1)
-    with col4:
-        reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
+    with st.form(key="form_nuevo_entreno"):
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            grupo = st.selectbox("💪 Grupo muscular", list(EJERCICIOS.keys()))
+        with col2:
+            ejercicio = st.selectbox("🏋️‍♂️ Ejercicio", EJERCICIOS[grupo])
+        with col3:
+            series = st.number_input("🔢 Series", min_value=1, step=1)
+        with col4:
+            reps = st.number_input("🔁 Reps", min_value=1, step=1)
 
-    col_peso, _ = st.columns([1, 3])  # 1 parte para peso, 3 partes espacio vacío
-    with col_peso:
-        peso = st.number_input("Peso (kg)", min_value=0.0, step=5.0)
+        peso = st.number_input("⚖️ Peso (kg)", min_value=0.0, step=5.0)
 
-    if st.button("Guardar 💾"):
-        if not ejercicio.strip():
-            st.error("❌ Por favor ingresa un ejercicio")
-        else:
+        submitted = st.form_submit_button("Guardar 💾")
+        if submitted:
             guardar_entrenamiento(fecha, ejercicio, series, reps, peso)
-            st.cache_data.clear()
-            st.session_state["mensaje_tab1"] = True
-            st.rerun()
+            st.success(f"✅ Entrenamiento guardado: {ejercicio} {series}x{reps} {peso}kg")
 
 # --- TAB 2: Historial y progreso ---
 with (tab2):
@@ -146,22 +133,12 @@ with (tab2):
     else:
         # Seleccionar ejercicio
         col_grupo, col_ejercicio = st.columns(2)
-
         with col_grupo:
             grupo_sel = st.selectbox(
                 "Grupo muscular",
                 list(EJERCICIOS.keys()),
                 key="grupo_historial"
             )
-
-        # reiniciar ejercicio si cambia el grupo
-        if "grupo_historial_anterior" not in st.session_state:
-            st.session_state.grupo_historial_anterior = grupo_sel
-
-        if grupo_sel != st.session_state.grupo_historial_anterior:
-            st.session_state.ejercicio_historial = EJERCICIOS[grupo_sel][0]
-            st.session_state.grupo_historial_anterior = grupo_sel
-
         with col_ejercicio:
             ejercicio_sel = st.selectbox(
                 "Ejercicio",
