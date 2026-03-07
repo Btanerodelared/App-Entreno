@@ -116,9 +116,9 @@ with tab1:
             st.error("❌ Por favor ingresa un ejercicio")
         else:
             guardar_entrenamiento(fecha,ejercicio, series, reps, peso)
-            st.success("✅ Entrenamiento guardado")
             st.cache_data.clear()
             st.rerun()
+            st.success("✅ Entrenamiento guardado")
 
 # --- TAB 2: Historial y progreso ---
 with (tab2):
