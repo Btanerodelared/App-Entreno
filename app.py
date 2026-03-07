@@ -131,13 +131,19 @@ with (tab2):
         st.info("No hay entrenamientos guardados.")
     else:
         # Seleccionar ejercicio
-        col_selc_ejercicio, _ = st.columns([1, 2])
 
-        with col_selc_ejercicio:
+        col_grupo, col_ejercicio = st.columns(2)
+        with col_grupo:
+            grupo_sel = st.selectbox(
+                "Grupo muscular",
+                list(EJERCICIOS.keys()),
+                key="grupo_historial"
+            )
+        with col_ejercicio:
             ejercicio_sel = st.selectbox(
-                "Selecciona ejercicio",
-                df["ejercicio"].unique(),
-                key="seleccionar_ejercicio"
+                "Ejercicio",
+                EJERCICIOS[grupo_sel],
+                key="ejercicio_historial"
             )
 
         df_filtrado = df[df["ejercicio"] == ejercicio_sel].reset_index(drop=True)
