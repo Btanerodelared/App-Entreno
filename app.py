@@ -154,8 +154,6 @@ with (tab2):
             df_filtrado["fecha"] = pd.to_datetime(df_filtrado["fecha"])
             df_filtrado = df_filtrado.sort_values("fecha")
 
-            st.subheader("📈 Progresión del peso")
-
             # Crear tabla
             mejor = df_filtrado["peso"].max()
             st.metric("🏆 Mejor marca", f"{mejor} kg")
@@ -176,6 +174,8 @@ with (tab2):
             )
 
             # Crear gráfico
+            st.subheader("📈 Progresión del peso")
+
             chart = alt.Chart(df_filtrado).mark_line(point=True).encode(
                 x=alt.X(
                     "fecha:T",
