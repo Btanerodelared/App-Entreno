@@ -107,9 +107,17 @@ with tab1:
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        grupo = st.selectbox("Grupo muscular", list(EJERCICIOS.keys()))
+        grupo = st.selectbox(
+            "Grupo muscular",
+            list(EJERCICIOS.keys()),
+            key="grupo_select"
+        )
     with col2:
-        ejercicio = st.selectbox("Ejercicio", EJERCICIOS[grupo])
+        ejercicio = st.selectbox(
+            "Ejercicio",
+            EJERCICIOS[grupo],
+            key=f"ejercicio_{grupo}"
+        )
     with col3:
         series = st.number_input("Series", min_value=1, step=1)
     with col4:
@@ -117,7 +125,7 @@ with tab1:
 
     col_peso, _ = st.columns([1, 3])  # 1 parte para peso, 3 partes espacio vacío
     with col_peso:
-        peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
+        peso = st.number_input("Peso (kg)", min_value=0.0, step=5.0)
 
     if st.button("Guardar 💾"):
         if not ejercicio.strip():
@@ -207,7 +215,7 @@ with (tab2):
 # --- TAB 3: Modificaciones ---
 with tab3:
     if st.session_state.get("mensaje_tab3"):
-        st.success("✅ Entrenamiento eliminado")
+        st.success("✅ Entrenamientos eliminados")
         del st.session_state["mensaje_tab3"]
 
     st.header("Modificaciones")
