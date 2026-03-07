@@ -51,9 +51,6 @@ EJERCICIOS = {
     ]
 }
 
-def es_separador(texto):
-    return texto.startswith("-----------")
-
 st.set_page_config(page_title="Entrenos", page_icon="💪")
 st.title("GYM")
 
@@ -76,6 +73,7 @@ def guardar_entrenamiento(fecha,ejercicio, series, reps, peso):
         })
         conn.commit()
 
+@st.cache_data
 def cargar_entrenamientos():
     with engine.connect() as conn:
         df = pd.read_sql("SELECT * FROM entrenamientos ORDER BY fecha ASC", conn)
@@ -119,8 +117,8 @@ with tab1:
         else:
             guardar_entrenamiento(fecha,ejercicio, series, reps, peso)
             st.success("✅ Entrenamiento guardado")
-            # recargar los datos de inmediato
-            df = cargar_entrenamientos()
+            st.cache_data.clear()
+            st.rerun()
 
 # --- TAB 2: Historial y progreso ---
 with (tab2):
@@ -223,4 +221,5 @@ with tab3:
                 ids_eliminar = [int(sel.split(" - ")[0]) for sel in eliminar]
                 eliminar_entrenamientos(ids_eliminar)
                 st.success(f"✅ {len(ids_eliminar)} entrenamientos eliminados")
-                st.rerun()  # refresca la app automáticamente
+                st.cache_data.clear()
+                st.rerun()
