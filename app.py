@@ -134,9 +134,9 @@ with tab1:
 
     if guardar:
         if peso == 0.0:
-            st.error("❌ Por favor ingresa un ejercicio")
+            st.error("❌ Introduce un peso valido")
         else:
-            guardar_entrenamiento(fecha, grupo, ejercicio, series, reps, peso)
+            guardar_entrenamiento(fecha, ejercicio, series, reps, peso)
             cargar_entrenamientos.clear()
             st.success("Entrenamiento guardado")
             st.rerun()
