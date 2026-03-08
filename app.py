@@ -98,7 +98,7 @@ with tab1:
         st.success("✅ Entrenamiento guardado")
         del st.session_state["mensaje_tab1"]
 
-    st.header("Nuevo Entrenamiento")
+    #st.header("Nuevo Entrenamiento")
 
     col_fecha, col_grupo = st.columns(2)
     with col_fecha:
@@ -121,11 +121,11 @@ with tab1:
             key="ejercicio_select"
         )
 
-        col1, col2 = st.columns(2)
+        col_series, col_reps = st.columns(2)
 
-        with col1:
+        with col_series:
             series = st.number_input("Series", min_value=1, step=1)
-        with col2:
+        with col_reps:
             reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
 
         col_peso,_ = st.columns([1,3])
