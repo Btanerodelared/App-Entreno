@@ -102,49 +102,37 @@ with tab1:
 
     st.subheader("Registrar entrenamiento")
 
+    # selector fuera del form
+    grupo = st.selectbox(
+        "Grupo muscular",
+        list(EJERCICIOS.keys()),
+        key="grupo_select"
+    )
+
     with st.form("form_entrenamiento"):
+
+        ejercicio = st.selectbox(
+            "Ejercicio",
+            EJERCICIOS[grupo],
+            key="ejercicio_select"
+        )
 
         col1, col2 = st.columns(2)
 
         with col1:
-            fecha = st.date_input("Fecha")
-
-            grupo = st.selectbox(
-                "Grupo muscular",
-                list(EJERCICIOS.keys())
-            )
-
-            ejercicio = st.selectbox(
-                "Ejercicio",
-                EJERCICIOS[grupo]
-            )
+            series = st.number_input("Series", min_value=1, step=1)
+            reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
 
         with col2:
-            series = st.number_input(
-                "Series",
-                min_value=1,
-                step=1
-            )
-
-            reps = st.number_input(
-                "Repeticiones por serie",
-                min_value=1,
-                step=1
-            )
-
-            peso = st.number_input(
-                "Peso (kg)",
-                min_value=0.0,
-                step=2.5
-            )
+            peso = st.number_input("Peso (kg)", min_value=0.0, step=2.5)
+            fecha = st.date_input("Fecha")
 
         guardar = st.form_submit_button("💾 Guardar entrenamiento")
 
-    # lógica fuera del form
     if guardar:
         guardar_entrenamiento(fecha, grupo, ejercicio, series, reps, peso)
         cargar_entrenamientos.clear()
-        st.success("Entrenamiento guardado correctamente")
+        st.success("Entrenamiento guardado")
         st.rerun()
 
 # --- TAB 2: Historial y progreso ---
