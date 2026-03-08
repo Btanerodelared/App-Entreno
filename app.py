@@ -128,7 +128,9 @@ with tab1:
         with col2:
             reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
 
-        peso = st.number_input("Peso (kg)", min_value=0.0, step=5.0)
+        col_peso = st.columns([1,3])
+        with col_peso:
+            peso = st.number_input("Peso (kg)", min_value=0.0, step=5.0)
 
         guardar = st.form_submit_button("💾 Guardar entrenamiento")
 
