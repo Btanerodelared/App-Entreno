@@ -100,41 +100,52 @@ with tab1:
 
     st.header("Nuevo Entrenamiento")
 
-    fecha = st.date_input(
-        "Fecha de nuevo entrenamiento",
-        value=datetime.now().date()
-    )
+    st.subheader("Registrar entrenamiento")
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        grupo = st.selectbox(
-            "Grupo muscular",
-            list(EJERCICIOS.keys()),
-            key="grupo_select"
-        )
-    with col2:
-        ejercicio = st.selectbox(
-            "Ejercicio",
-            EJERCICIOS[grupo],
-            key=f"ejercicio_{grupo}"
-        )
-    with col3:
-        series = st.number_input("Series", min_value=1, step=1)
-    with col4:
-        reps = st.number_input("Repeticiones por serie", min_value=1, step=1)
+    with st.form("form_entrenamiento"):
 
-    col_peso, _ = st.columns([1, 3])  # 1 parte para peso, 3 partes espacio vacío
-    with col_peso:
-        peso = st.number_input("Peso (kg)", min_value=0.0, step=5.0)
+        col1, col2 = st.columns(2)
 
-    if st.button("Guardar 💾"):
-        if not ejercicio.strip():
-            st.error("❌ Por favor ingresa un ejercicio")
-        else:
-            guardar_entrenamiento(fecha, ejercicio, series, reps, peso)
-            st.cache_data.clear()
-            st.session_state["mensaje_tab1"] = True
-            st.rerun()
+        with col1:
+            fecha = st.date_input("Fecha")
+
+            grupo = st.selectbox(
+                "Grupo muscular",
+                list(EJERCICIOS.keys())
+            )
+
+            ejercicio = st.selectbox(
+                "Ejercicio",
+                EJERCICIOS[grupo]
+            )
+
+        with col2:
+            series = st.number_input(
+                "Series",
+                min_value=1,
+                step=1
+            )
+
+            reps = st.number_input(
+                "Repeticiones por serie",
+                min_value=1,
+                step=1
+            )
+
+            peso = st.number_input(
+                "Peso (kg)",
+                min_value=0.0,
+                step=2.5
+            )
+
+        guardar = st.form_submit_button("💾 Guardar entrenamiento")
+
+    # lógica fuera del form
+    if guardar:
+        guardar_entrenamiento(fecha, grupo, ejercicio, series, reps, peso)
+        cargar_entrenamientos.clear()
+        st.success("Entrenamiento guardado correctamente")
+        st.rerun()
 
 # --- TAB 2: Historial y progreso ---
 with (tab2):
