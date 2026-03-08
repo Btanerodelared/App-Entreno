@@ -137,8 +137,8 @@ with tab1:
             st.error("❌ Introduce un peso valido")
         else:
             guardar_entrenamiento(fecha, ejercicio, series, reps, peso)
-            cargar_entrenamientos.clear()
-            st.success("Entrenamiento guardado")
+            st.cache_data.clear()
+            st.session_state["mensaje_tab1"] = True
             st.rerun()
 
 # --- TAB 2: Historial y progreso ---
