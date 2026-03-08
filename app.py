@@ -100,7 +100,7 @@ with tab1:
 
     st.header("Nuevo Entrenamiento")
 
-    col_fecha, col_grupo = st.columns([2])
+    col_fecha, col_grupo = st.columns(2)
     with col_fecha:
         fecha = st.date_input(
             "Fecha de nuevo entrenamiento",
