@@ -22,7 +22,9 @@ EJERCICIOS = {
         "Abductor",
         "Femoral Sentado",
         "Hacka",
-        "Gemelo Maquina"
+        "Gemelo Maquina",
+        "Salto Cajon",
+        "Piston Squad Cajon"
     ],
     "ESPALDA": [
         "Remo Bajo - Barra",
