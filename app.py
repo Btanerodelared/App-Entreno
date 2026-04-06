@@ -137,7 +137,7 @@ with tab1:
         guardar = st.form_submit_button("💾 Guardar entrenamiento")
 
     if guardar:
-        if peso == 0.0:
+        if peso == -1.0:
             st.error("❌ Introduce un peso valido")
         else:
             guardar_entrenamiento(fecha, ejercicio, series, reps, peso)
